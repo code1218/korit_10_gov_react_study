@@ -88,7 +88,8 @@ function Table2() {
   }
 
   const handleAddOnClick = () => {
-    setStudents([ ...students, {no: values.no, name: values.name, age: values.age} ])
+    
+    setStudents([ ...students, {...values} ])
   }
 
   return <>
