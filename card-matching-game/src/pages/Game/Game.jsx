@@ -2,11 +2,23 @@ import { useParams } from "react-router-dom";
 import * as s from "./styles";
 import { GiCardRandom } from "react-icons/gi";
 import GameCard from "../../components/GameCard/GameCard";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function Game() {
     const params = useParams();
     const [ cards, setCards ] = useState([]);
+    const [ started, setStarted ] = useState(false);
+    const [ timer, setTimer ] = useState(0);
+    const timeIntervalRef = useRef(null);
+
+    const msStr = timer.toString();
+    const sec = msStr.substring(0, msStr.length - 3) || 0;
+    const ms = msStr.substring(msStr.length - 3);
+
+    const handleStartOnClick = () => {
+        setStarted(true);
+        setTimer(0);
+    }
 
     const handleCardOpneOnClick = (id) => {
         if (cards.filter(card => card.isOpen && !card.isAnswer).length > 1) {
@@ -26,6 +38,10 @@ function Game() {
 
     useEffect(() => {
         const openCards = cards.filter(card => card.isOpen && !card.isAnswer);
+        const answerCards = cards.filter(card => card.isAnswer);
+        if (answerCards.length === 12) {
+            setStarted(false);
+        }
 
         if (openCards.length === 2) {
             if (openCards[0].content === openCards[1].content) {
@@ -52,47 +68,71 @@ function Game() {
                 }, 500);
             }
         }
-        console.log("!!")
     }, [cards]);
 
     useEffect(() => {
-        let randomNums = [];
-
-        while (randomNums.length < 12) {
-            const newNum = Math.floor((Math.random() * 10) + 1);
-            console.log(newNum)
-            if (randomNums.includes(newNum)) {
-                continue;
+        if (started) {
+            let randomNums = [];
+    
+            while (randomNums.length < 12) {
+                const newNum = Math.floor((Math.random() * 100) + 1);
+                if (randomNums.includes(newNum)) {
+                    continue;
+                }
+                randomNums = [...randomNums, newNum, newNum];
             }
-            randomNums = [...randomNums, newNum, newNum];
+    
+            for (let i = 0; i < randomNums.length; i++) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [ randomNums[i], randomNums[j] ] = [ randomNums[j], randomNums[i] ];
+                // let temp = randomNums[j];
+                // randomNums[j] = randomNums[i];
+                // randomNums[i] = temp;
+            }
+    
+            setCards(randomNums.map((num, index) => ({
+                id: index + 1,
+                content: num,
+                isOpen: false,
+                isAnswer: false,
+            })));
         }
+    }, [started]);
 
-        for (let i = 0; i < randomNums.length; i++) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [ randomNums[i], randomNums[j] ] = [ randomNums[j], randomNums[i] ];
-            // let temp = randomNums[j];
-            // randomNums[j] = randomNums[i];
-            // randomNums[i] = temp;
+
+    useEffect(() => {
+        if (started && !timer) {
+            const now = new Date();
+            const nowTime = now.getTime();
+            timeIntervalRef.current = setInterval(() => {
+                setTimer(new Date().getTime() - nowTime);
+            }, 10);
+        } else if (!started && !!timer) {
+            clearInterval(timeIntervalRef.current);
         }
-
-        setCards(randomNums.map((num, index) => ({
-            id: index + 1,
-            content: num,
-            isOpen: false,
-            isAnswer: false,
-        })));
-
-    }, []);
+    }, [started]);
 
     return <>
         <div css={s.layout}>
             <header>
                 <h1><GiCardRandom />CARD MATCING GAME<GiCardRandom /></h1>
-                <h3>플레이어: {params.username}</h3>
+                <h3>플레이어: {params.username} Time: {sec}.{ms}</h3>
             </header>
             <main>
                 {
-                    cards.map(card => <GameCard key={card.id} card={card} onClick={() => handleCardOpneOnClick(card.id)} />)
+                    started 
+                    ? cards.map(card => <GameCard key={card.id} card={card} onClick={() => handleCardOpneOnClick(card.id)} />)
+                    :
+                    <div css={s.centerContainer}>
+                        {
+                            !started && !!timer && <h1>Time: {sec}.{ms}</h1>
+                        }
+                        {
+                            !started && !timer
+                            ? <button onClick={handleStartOnClick}>게임시작</button>
+                            : <button onClick={handleStartOnClick}>다시하기</button>
+                        }
+                    </div>
                 }
             </main>
         </div>

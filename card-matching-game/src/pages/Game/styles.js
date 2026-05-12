@@ -54,3 +54,54 @@ export const layout = css`
         height: 100%;
     }
 `;
+
+export const centerContainer = css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    flex-grow: 1;
+
+    & > h1 {
+        margin: 0;
+        font-size: 70px;
+        color: #c5c5c5;
+        cursor: default;
+    }
+
+    @keyframes startButton {
+        0% {
+            transform: scale(100%);
+        }
+
+        100% {
+            transform: scale(110%);
+        }
+    }
+
+    & button {
+        border: none;
+        font-size: 50px;
+        font-family: 600;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+        background: linear-gradient(90deg,rgba(115, 10, 36, 1) 0%, rgba(131, 166, 109, 1) 100%);    
+        background-clip: text;
+        -webkit-background-clip: text;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        text-shadow: 0 0 5px #ffffff33;
+        animation-name: startButton;
+        animation-duration: 1s;
+        animation-timing-function: ease-in-out;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+
+        &:hover {
+            animation-iteration-count: 0;
+            transform: scale(110%);
+        }
+
+    }
+`;

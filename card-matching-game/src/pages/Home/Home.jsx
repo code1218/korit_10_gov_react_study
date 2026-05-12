@@ -22,6 +22,21 @@ function Home() {
             });
             return;
         }
+
+        fetch("http://localhost:8080/api/users", {
+            method: "post",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: inputValue,
+            }),
+        }).then(response => {
+            response.json().then(
+                json => console.log(json)
+            )
+        });
+
         navigate(`/game/${inputValue}`);
     }
 
