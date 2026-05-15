@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import * as s from "./styles";
 import { LuPencil } from "react-icons/lu";
 import Button from "../Button/Button";
@@ -6,6 +6,7 @@ import { BiPlus } from "react-icons/bi";
 import { useState } from "react";
 
 function Header() {
+    const {pathname} = useLocation();
     const navigate = useNavigate();
     const [ show, setShow ] = useState(false);
 
@@ -32,7 +33,10 @@ function Header() {
                 </Link>
             </div>
             <div css={s.right}>
-                <Button onClick={handleWriteOnClick}><BiPlus />글쓰기</Button>
+                {
+                    !pathname.startsWith("/write") && 
+                    <Button onClick={handleWriteOnClick}><BiPlus />글쓰기</Button>
+                }
                 <div css={s.profile} onClick={handleProfileOnClick}>
                     <span>김준일</span>
                     <ul css={s.profileMenu(show)}>

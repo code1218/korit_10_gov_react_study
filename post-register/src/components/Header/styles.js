@@ -5,7 +5,7 @@ export const layout = css`
     justify-content: space-between;
     align-items: center;
     box-sizing: border-box;
-    padding: 10px 20px;
+    padding: 15px 20px;
 `;
 
 export const left = css`
